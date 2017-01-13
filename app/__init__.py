@@ -17,14 +17,32 @@ from app.modules.utils import format_jsend_response
 from app.modules.utils import authenticate, deauthenticate, requires_auth
 
 from app.repositories.client_repo import Client_Repository
+from app.repositories.mobile_device_repo import MobileDevicesRepo
 
 client_repo = Client_Repository()
+device_repo = MobileDevicesRepo()
 
 @app.route('/')
 def root(): 
   return app.send_static_file('index.html')
 
 
+
+@app.route('/devices', methods=['GET', 'POST'])
+def all_device_handler():
+	if request.method == 'GET':
+		data = device_repo.get_all()
+		if data is None:
+			return format_jsend_response(status="error", message="There was an error getting all Devices")
+		return format_jsend_response(status="success", data=data)
+
+@app.route('/devices/<int:id>', methods=['GET'])
+def device_handler(id):
+	if request.method == 'GET':
+		device = device_repo.get_device_by_id(id)
+		if device is None:
+			return format_jsend_response(status="error", message="There was an error getting device with id %s"%id)
+		return format_jsend_response(status="success", data=device)
 
 @app.route('/clients', methods=['GET', 'POST'])
 # @requires_auth('client')
@@ -42,8 +60,8 @@ def all_clients_handler():
 		return format_jsend_response(status="success", data=client)
 
 
-@app.route('/client/<int:id>', methods=['GET', 'PUT', 'DELETE'])
-@requires_auth('client')
+@app.route('/clients/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+# @requires_auth('client')
 def client_handler(id):
 	if request.method == 'GET':
 		client = client_repo.get_client_by_id(id)
