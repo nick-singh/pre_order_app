@@ -18,15 +18,31 @@ from app.modules.utils import authenticate, deauthenticate, requires_auth
 
 from app.repositories.client_repo import Client_Repository
 from app.repositories.mobile_device_repo import MobileDevicesRepo
+from app.repositories.mobile_plan_repo import MobilePlansRepo
 
 client_repo = Client_Repository()
 device_repo = MobileDevicesRepo()
+plan_repo = MobilePlansRepo()
 
 @app.route('/')
 def root(): 
   return app.send_static_file('index.html')
 
+@app.route('/plans', methods=['GET', 'POST'])
+def all_plan_handler():
+	if request.method == 'GET':
+		data = plan_repo.get_all()
+		if data is None:
+			return format_jsend_response(status="error", message="There was an error getting all Plans")
+		return format_jsend_response(status="success", data=data)
 
+@app.route('/plans/<int:id>', methods=['GET'])
+def plan_handler(id):
+	if request.method == 'GET':
+		plan = plan_repo.get_plan_by_id(id)
+		if plan is None:
+			return format_jsend_response(status="error", message="There was an error getting plan with id %s"%id)
+		return format_jsend_response(status="success", data=plan)
 
 @app.route('/devices', methods=['GET', 'POST'])
 def all_device_handler():
