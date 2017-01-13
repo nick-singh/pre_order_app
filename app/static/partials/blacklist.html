@@ -1,0 +1,228 @@
+<div class="col-md-12">	
+	<div class="row" style="margin-top:10px;">
+		<div class="col-md-1" ng-if="currentUser.userRole=='user' || currentUser.userRole=='admin'">
+			<button class="btn" ng-click="openAddModal()" >Add</button>
+		</div>
+		<div class="col-md-4">
+			<input type="text" ng-model="search" class="form-control" placeholder="Search MISSNDs on current page">
+		</div>
+	</div>
+	<div class='row' style="margin-top:10px;">
+		<table class="table table-bordered">
+		   <thead>
+	        <tr>
+	          <!-- <th>#</th> -->
+	          <th class="col-1">MSISDN</th>
+	          <th class="col-1">Date First Added</th>
+	          <th class="col-1">Last Active</th>
+	          <th class="col-1">Opt Out Count</th>
+	          <th class="col-1">Status</th>
+	          <th ng-if="currentUser.userRole=='user' || currentUser.userRole=='admin'"></th>
+	          <th ng-if="currentUser.userRole=='user' || currentUser.userRole=='admin'"></th>
+	          <th></th>
+	        </tr>
+	      </thead>
+	      <tbody>
+	        <tr ng-repeat="item in blacklist track by item.ID" ng-show="([item] | filter:search).length > 0" ng-include="'display'">         
+	        </tr>
+	       </tbody>	
+		</table>
+	</div>		   
+	<div class="row">
+		<div class="col-md-12">
+			<pagination direction-links="false" boundary-links="true" items-per-page="itemsPerPage" ng-change="pageChanged()" total-items="totalItems" ng-model="currentPage"></pagination>       			
+		</div>
+	</div>
+
+	<!-- Templates  		  	  -->
+	<script type="text/ng-template" id="display">
+		<td>{{item.MSISDN}}</td>
+		<td>{{item.INIT_D_CREATED}}</td>
+		<td>{{item.LASTACTIVE}}</td>
+		<td>{{item.OPT_OUT_COUNT}}</td>
+		<td>{{item.STATUS}}</td>
+		<td ng-if="currentUser.userRole=='user' || currentUser.userRole=='admin'">
+			<button class='btn' ng-click="openEditModal($index, item)">Edit</button>
+		</td>
+		<td ng-if="currentUser.userRole=='user' || currentUser.userRole=='admin'">
+			<button class='btn' ng-click="removeItem(item)">Remove</button>
+		</td>
+		<td>
+			<button class='btn' ng-click="openDetailsModal(item)">Details</button>
+		</td>
+	</script>
+<!-- <input class="edit-body" type="text" ng-model="editItem.homeNum" /> -->
+
+		<!-- Modal -->
+	<script type="text/ng-template" id="blacklistModal.html">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="myModalLabel">New Blacklist Items</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal">
+				<div class="form-group">
+				    <div class="col-sm-2">
+				      <button ng-click="format()" ng-disabled="isFormatted && notcompleted" class="btn btn-xs">Format</button>
+				    </div>
+				    <div class="col-sm-2">
+				      <button ng-click="clear()" ng-disabled="numbers.length===0" class="btn btn-xs">Clear List</button>
+				    </div>
+				    <div class="col-sm-2">
+						<button class="btn btn-xs" ng-disabled="!isFormatted && numbers.length===0" ng-click="addToBL()">Add</button>
+					</div>
+			  	</div>					  	
+				<div class="form-group">
+					<div class="col-sm-11">
+						<textarea ng-show="!isFormatted" ng-model="blacklistMSISDNs" class="form-control" rows="21"></textarea>
+
+						<table ng-show="isFormatted && notcompleted" class="table table-bordered">
+						   <thead>
+					        <tr>							          
+					          <th class="col-12" style="text-align: center;">Values</th>
+					        </tr>
+					      </thead>
+					      <tbody>
+					        <tr ng-repeat="number in numbers">   
+					        	<td  ng-class="(number.length < 11 || number.substr(0,4) != '1868') ? 'danger' : ''" >{{number}}</td> 					          
+					        </tr>
+					       </tbody>	
+						</table>
+						<table ng-show="notcompleted === false" class="table table-bordered">
+						   <thead>
+					        <tr>							          
+					          <th class="col-6" style="text-align: center;">Values</th>
+					           <th class="col-6" style="text-align: center;">Status</th>
+					        </tr>
+					      </thead>
+					      <tbody>
+					        <tr ng-repeat="res in responseNos">   
+					        	<td ng-class="(res.val==500) ? 'danger' : 'success'" >{{res.num}}</td> 
+					        	<td ng-class="(res.val==500) ? 'danger' : 'success'" >{{res.msg}}</td>   
+					        </tr>
+					       </tbody>	
+						</table>
+					</div>							
+				</div>
+			</form>       
+		</div>
+		<div class="modal-footer">
+			 <button class="btn btn-warning" ng-click="cancel()">Cancel</button>    
+		</div>
+	</script>
+
+
+	<script type="text/ng-template" id="editBlacklistModal.html">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="myModalLabel">Edit</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal">
+			  <div class="form-group">
+			    <label for="inputEmail3" class="col-sm-2 control-label">MSISDN</label>
+			    <div class="col-sm-10">
+			      <input class="form-control" type="text" ng-model="editItem.MSISDN"  readonly />
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label  class="col-sm-2 control-label">Date Created</label>
+			    <div class="col-sm-10">
+			      <input class="form-control" type="text" ng-model="editItem.INIT_D_CREATED" readonly />
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label  class="col-sm-2 control-label">Last Active</label>
+			    <div class="col-sm-10">
+			      <input class="form-control" type="text" ng-model="editItem.LASTACTIVE" readonly />
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label  class="col-sm-2 control-label">Opt Out Count</label>
+			    <div class="col-sm-10">
+					<select class="form-control" ng-model="editItem.OPT_OUT_COUNT" ng-options="opt for opt in opt_count"></select>
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label  class="col-sm-2 control-label">Status</label>
+			    <div class="col-sm-10">
+			     <input class="form-control" type="text" ng-model="editItem.STATUS" readonly />
+			    </div>
+			  </div>
+			  <!--div class="form-group">
+			    <label  class="col-sm-2 control-label">Comment</label>
+			    <div class="col-sm-10">
+			     <textarea class="form-control" type="textarea" rows="5" ng-model="editItem.COMMENTS"> </textarea>
+			    </div>
+			  </div-->
+			</form>       
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primary" type="button" ng-click="submit()">OK</button>
+			<button class="btn btn-warning" ng-click="cancel()">Cancel</button>    
+		</div>
+	</script>
+
+
+	<script type="text/ng-template" id="blacklistDetailsModal.html">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="myModalLabel">Details</h4>
+		</div>
+		<div class="modal-body">
+			<tabset justified="true">
+				<tab heading="Details">
+					<div class="col-md-12">
+						<div class='row' style="margin-top:10px;">
+							<table class="table table-bordered">
+							   <thead>
+						        <tr>						          
+						          <th class="col-1">Date Changed</th>
+						          <th class="col-1">Agent</th>
+						          <th class="col-1">Action</th>
+						          <th class="col-1">Comment</th>
+						        </tr>
+						      </thead>
+						      <tbody>						      
+						        <tr ng-repeat="details in blacklistdetails.details">
+						        	<td class="col-xs-2">{{details.DATE_CHANGED}}</td>
+						        	<td class="col-xs-2">{{details.AGENT}}</td>
+						        	<td class="col-xs-2">{{details.ACTION}}</td>
+						        	<td class="col-xs-2">{{details.COMMENTS}}</td>
+						        </tr>
+						       </tbody>	
+							</table>
+						</div>
+					</div>
+				</tab>
+				<tab heading="Notifications">
+					<div class="col-md-12">
+					<div class = "row" style="margin-top:10px;" ng-show="blacklistdetails.history.length === 0">
+						<h4>No notifications have been sent to this user!</h4>
+					</div>
+						<div class="row" style="margin-top:10px;" ng-show="blacklistdetails.history.length > 0">
+							<table class="table table-bordered">
+							   <thead>
+						        <tr>						          
+						          <th class="col-1">Date Created</th>
+						          <th class="col-1">Message</th>
+						        </tr>
+						      </thead>
+						      <tbody>						      
+						        <tr ng-repeat="history in blacklistdetails.history">
+						        	<td class="col-xs-2">{{history.D_CREATED}}</td>
+						        	<td class="col-xs-2">{{history.MESSAGE}}</td>
+						        </tr>
+						       </tbody>	
+							</table>
+						</div>
+					</div>
+				</tab>			
+			</tabset>      
+		</div>
+		<div class="modal-footer">			
+			<button class="btn btn-warning" ng-click="cancel()">Close</button>    
+		</div>
+	</script>
+
+</div>

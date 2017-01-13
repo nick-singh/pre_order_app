@@ -1,0 +1,47 @@
+/* 
+ *	This is the main css file
+ */
+
+.navbar-brand > img{
+	width: 150px;
+	height: auto;
+}
+
+.navbar-custom {
+    background-color:#EC3428;
+    color:#ffffff;
+    border-radius:0;
+}
+
+.navbar-custom .navbar-nav > li > a {
+    color:#fff;
+}
+
+.navbar-custom .navbar-nav > li > a:hover, .nav > li > a:focus {
+    color: #EC3428;
+    background-color: #ffffff;
+}
+.navbar-custom .navbar-brand {
+    color:#eeeeee;
+}
+
+.loader{
+	margin-top: 150px;
+}
+
+#main-body{
+	min-height: 550px;
+}
+
+.items{
+    margin-bottom: 10px;
+}
+
+.config-form{
+    margin-top: 10px;
+}
+
+.config-form > select, .config-form > input{
+    width:100px;
+    box-sizing:border-box;
+}

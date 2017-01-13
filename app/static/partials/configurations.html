@@ -1,0 +1,56 @@
+<div class="col-md-12">
+	<legend>Opt Out Blacklist Configurations</legend>	
+	<div class="row config-form">
+		<form >
+		  <div class="form-group">
+		    <label>Opt Out Period (Months)</label>
+		     <input type="text" class="form-control" ng-model="configurations.OPT_OUT_PEROID" placeholder="Opt Out Period">
+		  </div>
+		  <button type="submit" class="btn btn-default" ng-click="submitConfig()">Submit</button>
+		</form>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col-md-5">			
+			<div class="row config-form">
+				<form >
+				  <div class="form-group">
+				    <label>First Notification Before Opt Out Period (days)</label>
+				     <select class="form-control" ng-model="configurations.FIRST_NOTIFICATION" ng-options="n+' days' for n in notification_days"></select>
+				  </div>
+				  <button type="submit" class="btn btn-default"ng-click="submitConfig()">Submit</button>
+				</form>
+			</div>
+			<div class="row config-form">
+				<form >
+				  <div class="form-group">
+				    <label>First Notification Before Opt Out Message</label>
+				     <textarea class="form-control" ng-model="configurations.FIRST_NOTIFICATION_MSG" rows="3"></textarea>
+				  </div>
+				  <button type="submit" class="btn btn-default"ng-click="submitConfig()">Submit</button>
+				</form>
+			</div>
+		</div>
+
+		<div class="col-md-offset-2 col-md-5">
+			<div class="row config-form">
+				<form >
+				  <div class="form-group">
+				    <label>Second Notification Before Opt Out Period (days)</label>
+				     <select class="form-control" ng-model="configurations.SECOND_NOTIFICATION" ng-options="n+' days' for n in notification_days"></select>
+				  </div>
+				  <button type="submit" class="btn btn-default"ng-click="submitConfig()">Submit</button>
+				</form>
+			</div>
+			<div class="row config-form">
+				<form >
+				  <div class="form-group">
+				    <label>Second Notification Before Opt Out Message</label>
+				     <textarea class="form-control" ng-model="configurations.SECOND_NOTIFICATION_MSG" rows="3"></textarea>
+				  </div>
+				  <button type="submit" class="btn btn-default"ng-click="submitConfig()">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>		
+</div>
