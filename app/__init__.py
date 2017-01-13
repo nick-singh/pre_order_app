@@ -19,14 +19,32 @@ from app.modules.utils import authenticate, deauthenticate, requires_auth
 from app.repositories.client_repo import Client_Repository
 from app.repositories.mobile_device_repo import MobileDevicesRepo
 from app.repositories.mobile_plan_repo import MobilePlansRepo
+from app.repositories.orders_repo import OrdersRepo
 
 client_repo = Client_Repository()
 device_repo = MobileDevicesRepo()
 plan_repo = MobilePlansRepo()
+orders_repo = OrdersRepo()
 
 @app.route('/')
 def root(): 
   return app.send_static_file('index.html')
+
+@app.route('/orders', methods=['GET', 'POST'])
+def all_orders_handler():
+	if request.method == 'GET':
+		data = orders_repo.get_all()
+		if data is None:
+			return format_jsend_response(status="error", message="There was an error getting all Orders")
+		return format_jsend_response(status="success", data=data)
+
+@app.route('/orders/<int:id>', methods=['GET'])
+def order_handler(id):
+	if request.method == 'GET':
+		order = orders_repo.get_order_by_id(id)
+		if order is None:
+			return format_jsend_response(status="error", message="There was an error getting order with id %s"%id)
+		return format_jsend_response(status="success", data=order)
 
 @app.route('/plans', methods=['GET', 'POST'])
 def all_plan_handler():
