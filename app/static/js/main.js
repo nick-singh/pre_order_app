@@ -3,7 +3,7 @@
 	'use strict';
 
 
-	angular.module('REB',
+	angular.module('pre',
 	[
 		'ngRoute',
 		'ui.bootstrap'
